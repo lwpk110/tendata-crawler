@@ -1,8 +1,8 @@
 description = "tendata-crawler-webMagic"
 
 dependencies {
-    //    compile project(':tendata-batch-common')
-    //    compile project(':tendata-batch-hadoop')
+    compile project(':tendata-crawler-core')
+
     compile "commons-logging:commons-logging:1.2"
     compile ("us.codecraft:webmagic-core:${webMagicVersion}"){
         exclude module: "slf4j-api"

@@ -1,5 +1,6 @@
 package cn.xinbee.rcs.webapp;
 
+import cn.tendata.crawler.webmagic.config.MailAgentDomainIpQualityConfig;
 import cn.xinbee.rcs.data.elasticsearch.core.CustomEntityMapper;
 import cn.xinbee.rcs.service.EntityService;
 import com.cosium.spring.data.jpa.entity.graph.repository.support.EntityGraphJpaRepositoryFactoryBean;
@@ -11,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.core.DefaultResultMapper;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
@@ -53,30 +55,13 @@ public class Application {
         }
     }
 
-/*    @Import({MailDeliveryGatewayConfig.class,
-            FocusSendConfig.class,
-            BatchTaskCommonConfig.class,
-            MailDeliveryAspectConfig.class,
-            PasswayConfig.class})
-
-    static class MailDeliveryReportConfig {
-
-        @Bean
-        public MailAgentDeliveryManager mailAgentDeliveryManager(
-                @Value("classpath:domain_suffix.properties") Resource resource) {
-            return new MailAgentDeliveryManager(new DomainSuffixResolver(resource));
-        }
-
-        @Bean
-        public MailDeliveryRestApiManager mailDeliveryRestApiManager(RestTemplate restTemplate) {
-            return new MailDeliveryChannelNodeRestApiManager(restTemplate);
-        }
-
-
-    }*/
-
     @Configuration
     @ComponentScan(basePackageClasses = {EntityService.class})
     static class ServiceConfig {
+    }
+
+    @Configuration
+    @Import({MailAgentDomainIpQualityConfig.class})
+    static class Crawler {
     }
 }

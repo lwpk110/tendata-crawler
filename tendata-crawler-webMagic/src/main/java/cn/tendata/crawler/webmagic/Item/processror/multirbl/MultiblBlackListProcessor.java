@@ -1,0 +1,119 @@
+package cn.tendata.crawler.webmagic.Item.processror.multirbl;
+
+import cn.tendata.crawler.webmagic.Item.AbstractWebMagicPageProcessor;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.selector.PlainText;
+import us.codecraft.webmagic.selector.Selectable;
+
+import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.BLACKLIST_SUMMARY;
+
+/**
+ * {@inheritDoc}
+ *
+ * Created by ernest on 2017/8/24.
+ */
+public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
+
+    private final Logger logger  = LoggerFactory.getLogger(this.getClass());
+
+    private volatile int blackList_blackListed = 0;
+    private volatile int combinedlist_blackListed = 0;
+    private volatile int whitelist_blackListed = 0;
+    private volatile int informationallist__blackListed = 0;
+
+    int blackListSummary ;
+
+    private volatile Map map = new HashMap();
+
+    private ObjectMapper mapper = new ObjectMapper(); //转换器
+
+    @Override
+    public void process(Page page) {
+        if (CollectionUtils.isNotEmpty(
+            page.getUrl().regex("http://multirbl.valli.org/lookup/.+.html").nodes())) {
+            blackListSummary = 0;
+            loadMainHtml(page);
+        }
+        if (CollectionUtils.isNotEmpty(
+            page.getUrl().regex("http://multirbl.valli.org/json-lookup.php.+").nodes())) {
+            ajaxRequest(page);
+        }
+    }
+
+    private void loadMainHtml(Page page) {
+        Selectable selectable = page.getHtml().$("table[id=dnsbl_data] tr:has(td)");
+        final List<Selectable> selectableList = selectable.nodes();
+        String data = page.getHtml()
+            .getDocument()
+            .head()
+            .getAllElements()
+            .get(12)
+            .childNodes()
+            .get(0)
+            .attr("data")
+            .replaceAll("\\s+", "");
+        String json = data.substring(data.indexOf('{'), data.lastIndexOf("}") + 1);
+        String oasessionHash = "";
+        try {
+            mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            map = mapper.readValue(json, Map.class);
+            oasessionHash = (String) map.get("asessionHash");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Selectable selectable1 : selectableList) {
+            PlainText id = (PlainText) selectable1.$("tr", "id");
+            PlainText l_id = (PlainText) selectable1.$("tr td.l_id", "text");
+            PlainText l_qhost = (PlainText) selectable1.$("tr td.l_qhost", "text");
+            PlainText dns_zone = (PlainText) selectable1.$("tr td.dns_zone", "text");
+            String reqData =
+                "ash=" + oasessionHash + "&rid=" + id + "&lid=" + l_id + "&q=" + l_qhost;
+            page.addTargetRequest("http://multirbl.valli.org/json-lookup.php?" + reqData);
+        }
+    }
+
+    private void ajaxRequest(Page page) {
+        try {
+            final Map resMap = mapper.readValue(page.getRawText(), Map.class);
+            String rid = (String)resMap.get("rid");
+            String testName = rid.split("_")[0];
+            boolean failed =(Boolean) ((Map) resMap.get("data")).get("failed");
+            if(!failed){
+                String resultColor = (String) resMap.get("result_color");
+                if("black".equals(resultColor)){
+                    switch (testName){
+                        case "DNSBLBlacklistTest":
+                            blackList_blackListed ++;
+                            break;
+                        case "DNSBLCombinedlistTest":
+                            combinedlist_blackListed ++;
+                            break;
+                        case "DNSBLWhitelistTest":
+                            whitelist_blackListed ++;
+                            break;
+                        case "DNSBLInformationallistTest":
+                            informationallist__blackListed ++;
+                            break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int blackListSummary = blackList_blackListed + combinedlist_blackListed + whitelist_blackListed + informationallist__blackListed;
+        page.putField(BLACKLIST_SUMMARY,blackListSummary);
+        logger.info("------blackList Summary : " + blackListSummary);
+    }
+
+
+}
