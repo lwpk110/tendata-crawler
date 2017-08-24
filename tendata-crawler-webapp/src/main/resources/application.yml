@@ -1,0 +1,114 @@
+server:
+  port: 8092
+
+logging:
+  path: logs/
+  level:
+    root: INFO
+
+spring:
+  profiles.active: mysql,dev,webpower,cheetahMail,elasticsearch
+  messages:
+    basename: cn/tendata/mdcs/messages,cn/tendata/mdcs/web/messages,i18n/admin/ValidationMessages
+  jpa:
+     open-in-view: true
+     show-sql: true
+     properties:
+       jadira.usertype.autoRegisterUserTypes: true
+     hibernate:
+       naming:
+           implicit-strategy: cn.xinbee.rcs.data.jpa.config.CustomImplicitNamingStrategy
+       ddl-auto: update
+security:
+  ignored: /favicon.ico,css/**,/js/**,/fonts/**,/img/**,/webjars/**,/admin/app/**,/admin/assets/**,/admin/css/**,/admin/html/**,/admin/images/**
+
+multipart:
+  enabled: true
+  max-file-size: 1Mb
+  max-request-size: 10Mb
+
+link:
+  accounts.root: ${accounts.server.name:http://localhost:8080/accounts}
+  wmt.root: ${wmt.server.name:http://localhost:8080/wmt}
+  contactx.root: ${cx.server.name:http://localhost:8080/contactx}
+  channel.node.root: ${channel.node.access.properties.uri:http://localhost:8091/api/xinbee/channel/{channelId}/node}
+  channel.info.root: ${channel.node.info.uri:http://localhost:8091/api/xinbee/channel/{channelId}}
+  rcs.root: ${rcs.server.name:http://localhost:8092}
+
+
+filter:
+    mailRecipient-uri: ${link.analysis.root}/api/analysis/filter/verify?mailRecipients={mailRecipients}&callVersion=1.0
+
+
+payment:
+  gateway-uri: ${pay.server.name:https://localhost:8888}/api/gateway
+  partner: 111111
+  key: 111111
+  notify-url: ${edm.server.name:http://localhost:${server.port}}/pay/notify
+
+---
+spring:
+  profiles: cas
+cas:
+  service: ${edm.server.name:http://localhost:${server.port}}/login/cas
+  server-url-prefix: ${cas.server.name:http://192.168.0.100:8080/cas}
+  server-login-url:  ${cas.server-url-prefix}/login
+  server-logout-url:  ${cas.server-url-prefix}/logout
+  application-parameters.applicationId: 1006
+  application-parameters.hasChildUsers: true
+---
+spring:
+  profiles: mysql
+  datasource:
+    driver-class-name: ${datasource.driver-class-name:com.mysql.jdbc.Driver}
+    url: ${datasource.url:jdbc:mysql://192.168.1.111:3306/xinbee_scs_taskup}
+    username: ${datasource.username:root}
+    password: ${datasource.password:}
+    test-while-idle: true
+    test-on-borrow: true
+    validation-query: SELECT 1
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: update
+flyway:
+  locations: classpath:db/migration/mysql
+
+---
+spring:
+  profiles: elasticsearch
+  data:
+    elasticsearch:
+      cluster-nodes: 192.168.1.111:9300
+      cluster-name: dev-es
+
+---
+spring:
+  profiles: webpower
+webpower:
+  sftp-host: ${batch.sftp-url:192.168.1.111}
+  sftp-login-user: ${batch.sftp-login-username:sftp}
+  sftp-login-password: ${batch.sftp-login-passwd:sftp}
+ # sftp-login-private-key: ${batch.sftp-login-private-key:tendata_rsa.rsa}
+  sftp-port: ${batch.port:22}
+  sftp-dir-remote-download: ${batch.sftp-remote-download:data}
+  sftp-dir-remote-upload: ${batch.sftp-remote-upload:upload}
+  local-dir-perefix: ${batch.local-download-directory:/data/channel/sftp/webpowerftp}
+
+---
+spring:
+  profiles: cheetahMail
+cheetahMail:
+  sftp-host: ${cheetahMail.batch.sftp-url:192.168.1.110}
+  sftp-login-user: ${cheetahMail.batch.sftp-login-username:cheetahmail}
+  sftp-login-password: ${cheetahMail.batch.sftp-login-passwd:cheetahmail}
+  sftp-port: ${cheetahMail.batch.port:22}
+  sftp-dir-remote-download: ${cheetahMail.batch.sftp-remote-download:cheetahMail}
+  local-dir-perefix: ${cheetahMail.batch.local-download-directory:/data/channel/sftp/cheetahMailsftp}
+
+---
+spring:
+  batch:
+    job:
+      enabled: false
+

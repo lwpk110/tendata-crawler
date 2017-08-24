@@ -1,0 +1,61 @@
+plugins {
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.8"
+}
+
+description = 'xinbee-rcs-core'
+
+sourceSets {
+    generated {
+        java {
+            srcDirs = ['src/main/generated']
+        }
+    }
+}
+
+dependencies {
+    compile "org.springframework:spring-aspects"
+    compile "org.springframework:spring-context-support"
+    compile "org.springframework.data:spring-data-jpa"
+    compile "org.springframework.data:spring-data-elasticsearch"
+    compile "org.hibernate:hibernate-validator"
+    compile "org.hibernate:hibernate-entitymanager"
+    compile "org.hsqldb:hsqldb"
+    compile "org.jadira.usertype:usertype.core:${usertypeVersion}"
+    compile "com.cosium.spring.data:spring-data-jpa-entity-graph:${springDataJpaEntityGraphVersion}"
+    compile "com.querydsl:querydsl-jpa:${querydslVersion}"
+    compile "joda-time:joda-time"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
+    compile "org.apache.commons:commons-lang3"
+    compile "commons-beanutils:commons-beanutils"
+    compile "org.apache.poi:poi"
+    compile "net.sf.ehcache:ehcache"
+    compile "org.jasig.inspektr:inspektr-audit:${inspektrVersion}"
+    compile "org.jasig.inspektr:inspektr-support-spring:${inspektrVersion}"
+    compile "org.quartz-scheduler:quartz:2.2.1"
+    compile "org.quartz-scheduler:quartz-jobs:2.2.1"
+    compile "com.alibaba:fastjson:${fastjsonVersion}"
+
+
+    testCompile "org.mockito:mockito-core"
+    testCompile "org.hamcrest:hamcrest-all"
+    testCompile "junit:junit"
+    testCompile "org.springframework:spring-test"
+    integrationTestCompile "org.dbunit:dbunit:${dbunitVersion}"
+    integrationTestCompile "com.github.springtestdbunit:spring-test-dbunit:${springtestdbunitVersion}"
+    integrationTestCompile "org.glassfish:javax.el:${elVersion}"
+    
+}
+
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = "${buildDir}/generated/java"
+}
+
+idea {
+    module {
+        sourceDirs += file('${buildDir}/generated/java')
+    }
+}
+

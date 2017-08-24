@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE'
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+springBoot {
+    executable = true
+}
+
+description = 'xinbee-rcs-webapp'
+
+dependencies {
+    compile project(':tendata-crawler-core')
+    compile project(':tendata-crawler-webMagic')
+
+    // compile project(':xinbee-rcs-manager')
+   // compile project(':xinbee-rcs-focussend')
+   // compile project(':xinbee-rcs-batch')
+   // compile project(':xinbee-rcs-webpower')
+
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    compile "org.springframework.boot:spring-boot-starter-cache"
+    compile "org.springframework.boot:spring-boot-configuration-processor"
+
+    compile "mysql:mysql-connector-java"
+    compile 'org.flywaydb:flyway-core'
+    compile "javax.activation:activation"
+    compile "javax.mail:mail:${javaxMailVersion}"
+    compile "org.thymeleaf:thymeleaf"
+    compile "org.thymeleaf:thymeleaf-spring4"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect"
+    compile "org.thymeleaf.extras:thymeleaf-extras-springsecurity4"
+    compile "net.sourceforge.nekohtml:nekohtml:${nekohtmlVersion}"
+    compile "org.jasig.cas.client:cas-client-core:${casClientVersion}"
+
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+}
