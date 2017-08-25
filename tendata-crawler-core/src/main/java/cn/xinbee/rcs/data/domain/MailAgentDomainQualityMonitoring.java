@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
  * Created by jeashi on 2016/6/23.
  */
 @Entity
-public class MailAgentDomainIpQualityMonitoring extends AbstractEntityAuditable<Long> {
+public class MailAgentDomainQualityMonitoring extends AbstractEntityAuditable<Long> {
 
     private static final long serialVersionUID = 1L;
 

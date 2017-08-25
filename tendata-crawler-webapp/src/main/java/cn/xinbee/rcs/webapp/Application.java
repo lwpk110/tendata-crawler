@@ -1,6 +1,6 @@
 package cn.xinbee.rcs.webapp;
 
-import cn.tendata.crawler.webmagic.config.MailAgentDomainIpQualityConfig;
+import cn.tendata.crawler.webmagic.config.MailAgentDomainQualityConfig;
 import cn.xinbee.rcs.data.elasticsearch.core.CustomEntityMapper;
 import cn.xinbee.rcs.service.EntityService;
 import com.cosium.spring.data.jpa.entity.graph.repository.support.EntityGraphJpaRepositoryFactoryBean;
@@ -61,7 +61,7 @@ public class Application {
     }
 
     @Configuration
-    @Import({MailAgentDomainIpQualityConfig.class})
+    @Import({MailAgentDomainQualityConfig.class})
     static class Crawler {
     }
 }

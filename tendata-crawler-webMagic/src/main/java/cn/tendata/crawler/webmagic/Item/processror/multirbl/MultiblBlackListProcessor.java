@@ -23,14 +23,14 @@ import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.BL
  */
 public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
 
-    private final Logger logger  = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private volatile int blackList_blackListed = 0;
     private volatile int combinedlist_blackListed = 0;
     private volatile int whitelist_blackListed = 0;
     private volatile int informationallist__blackListed = 0;
 
-    int blackListSummary ;
+    private volatile int blackListSummary = 0;
 
     private volatile Map map = new HashMap();
 
@@ -41,6 +41,10 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
         if (CollectionUtils.isNotEmpty(
             page.getUrl().regex("http://multirbl.valli.org/lookup/.+.html").nodes())) {
             blackListSummary = 0;
+            blackList_blackListed = 0;
+            combinedlist_blackListed = 0;
+            whitelist_blackListed = 0;
+            informationallist__blackListed = 0;
             loadMainHtml(page);
         }
         if (CollectionUtils.isNotEmpty(
@@ -80,29 +84,31 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
                 "ash=" + oasessionHash + "&rid=" + id + "&lid=" + l_id + "&q=" + l_qhost;
             page.addTargetRequest("http://multirbl.valli.org/json-lookup.php?" + reqData);
         }
+        logger.info("---> page request size ：" + page.getTargetRequests().size());
     }
 
     private void ajaxRequest(Page page) {
+
         try {
             final Map resMap = mapper.readValue(page.getRawText(), Map.class);
-            String rid = (String)resMap.get("rid");
+            String rid = (String) resMap.get("rid");
             String testName = rid.split("_")[0];
-            boolean failed =(Boolean) ((Map) resMap.get("data")).get("failed");
-            if(!failed){
+            boolean failed = (Boolean) ((Map) resMap.get("data")).get("failed");
+            if (!failed) {
                 String resultColor = (String) resMap.get("result_color");
-                if("black".equals(resultColor)){
-                    switch (testName){
+                if ("black".equals(resultColor)) {
+                    switch (testName) {
                         case "DNSBLBlacklistTest":
-                            blackList_blackListed ++;
+                            blackList_blackListed++;
                             break;
                         case "DNSBLCombinedlistTest":
-                            combinedlist_blackListed ++;
+                            combinedlist_blackListed++;
                             break;
                         case "DNSBLWhitelistTest":
-                            whitelist_blackListed ++;
+                            whitelist_blackListed++;
                             break;
                         case "DNSBLInformationallistTest":
-                            informationallist__blackListed ++;
+                            informationallist__blackListed++;
                             break;
                     }
                 }
@@ -110,10 +116,10 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        int blackListSummary = blackList_blackListed + combinedlist_blackListed + whitelist_blackListed + informationallist__blackListed;
-        page.putField(BLACKLIST_SUMMARY,blackListSummary);
-        logger.info("------blackList Summary : " + blackListSummary);
+        int blackListSummary = blackList_blackListed
+            + combinedlist_blackListed
+            + whitelist_blackListed
+            + informationallist__blackListed;
+        page.putField(BLACKLIST_SUMMARY, blackListSummary);
     }
-
-
 }

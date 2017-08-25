@@ -22,7 +22,7 @@ public class MailAgentDomainCrawlScheduler {
         this.mailAgentDomainRepository = mailAgentDomainRepository;
     }
 
-    @Scheduled(initialDelay = 30000,fixedDelay = 3600000)
+    @Scheduled(initialDelay = 10000,fixedDelay = 3600000)
     public void poll(){
         final List<MailAgentDomain> mailAgentDomainList = mailAgentDomainRepository.findAllByDisabledFalseAndDeletedFalseAndIpInfoNotNull();
         mailAgentDomainList.forEach(mailAgentDomainIpQualityCrawler::crawl);

@@ -1,6 +1,6 @@
 package cn.xinbee.rcs.data.repository;
 
-import cn.xinbee.rcs.data.domain.MailAgentDomainIpQualityMonitoring;
+import cn.xinbee.rcs.data.domain.MailAgentDomainQualityMonitoring;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * Created by ernest on 2017/8/23.
  */
-public interface MailAgentDomainIpQualityMonitoringRepository extends JpaRepository<MailAgentDomainIpQualityMonitoring, Long> {
+public interface MailAgentDomainIpQualityMonitoringRepository extends JpaRepository<MailAgentDomainQualityMonitoring, Long> {
 }

@@ -1,4 +1,4 @@
-rootProject.name = 'xinbee-crawler'
+rootProject.name = 'tendata-crawler'
 
 include 'tendata-crawler-core',
         'tendata-crawler-webapp',

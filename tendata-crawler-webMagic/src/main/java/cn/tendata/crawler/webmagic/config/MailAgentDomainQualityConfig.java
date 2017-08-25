@@ -3,7 +3,6 @@ package cn.tendata.crawler.webmagic.config;
 import cn.tendata.crawler.webmagic.Item.processror.multirbl.MultiblBlackListProcessor;
 import cn.tendata.crawler.webmagic.Item.processror.talos.TalosIpQualityProcessor;
 import cn.tendata.crawler.webmagic.core.MailAgentDomainIpQualityCrawler;
-import cn.tendata.crawler.webmagic.core.MailAgentDomainIpQualityPipeline;
 import cn.tendata.crawler.webmagic.core.SpiderFactory;
 import cn.tendata.crawler.webmagic.suport.MailAgentDomainCrawlScheduler;
 import cn.xinbee.rcs.data.repository.MailAgentDomainIpQualityMonitoringRepository;
@@ -25,7 +24,7 @@ import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.TA
  */
 @Configuration
 @EnableScheduling
-public class MailAgentDomainIpQualityConfig {
+public class MailAgentDomainQualityConfig {
 
     @Bean
     public PageProcessor multiblBlackListProcessor() {
@@ -38,23 +37,15 @@ public class MailAgentDomainIpQualityConfig {
     }
 
     @Bean
-    public MailAgentDomainIpQualityPipeline mailAgentDomainIpQualityPipeline(
-        MailAgentDomainIpQualityMonitoringRepository mailAgentDomainIpQualityMonitoringRepository) {
-        return new MailAgentDomainIpQualityPipeline(mailAgentDomainIpQualityMonitoringRepository);
+    public Spider multiblBlackListSpider() {
+        return new Spider(multiblBlackListProcessor())
+            .thread(300).setUUID(MULTIBL_KEY);
     }
 
     @Bean
-    public Spider multiblBlackListSpider(
-        MailAgentDomainIpQualityPipeline mailAgentDomainIpQualityPipeline) {
-        return new Spider(multiblBlackListProcessor()).addPipeline(mailAgentDomainIpQualityPipeline)
-            .thread(10).setUUID(MULTIBL_KEY);
-    }
-
-    @Bean
-    public Spider talosIpQualitySpider(
-        MailAgentDomainIpQualityPipeline mailAgentDomainIpQualityPipeline) {
-        return new Spider(talosIpQualityProcessor()).addPipeline(mailAgentDomainIpQualityPipeline)
-            .thread(10).setUUID(TALOS_KEY);
+    public Spider talosIpQualitySpider() {
+        return new Spider(talosIpQualityProcessor())
+            .thread(1).setUUID(TALOS_KEY);
     }
 
     @Bean
@@ -64,8 +55,10 @@ public class MailAgentDomainIpQualityConfig {
 
     @Bean
     public MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler(
-        SpiderFactory spiderFactory) {
-        return new MailAgentDomainIpQualityCrawler(spiderFactory);
+        SpiderFactory spiderFactory,
+        MailAgentDomainIpQualityMonitoringRepository mailAgentDomainIpQualityMonitoringRepository) {
+        return new MailAgentDomainIpQualityCrawler(spiderFactory,
+            mailAgentDomainIpQualityMonitoringRepository);
     }
 
     @Bean
