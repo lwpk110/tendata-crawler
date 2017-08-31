@@ -11,9 +11,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.selector.PlainText;
 import us.codecraft.webmagic.selector.Selectable;
 
+import static cn.tendata.crawler.webmagic.Item.processror.multirbl.MultiblData.MULTIBL_AJAX_URL_REGEX;
+import static cn.tendata.crawler.webmagic.Item.processror.multirbl.MultiblData.MULTIBL_PAGE_SESSION_HASH;
+import static cn.tendata.crawler.webmagic.Item.processror.multirbl.MultiblData.MULTIBL_REQUEST_URL_REGEX;
 import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.BLACKLIST_SUMMARY;
 
 /**
@@ -36,19 +40,17 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
 
     private ObjectMapper mapper = new ObjectMapper(); //转换器
 
+    @Override public Site getSite() {
+        return super.getSite().setTimeOut(10000);
+    }
+
     @Override
     public void process(Page page) {
-        if (CollectionUtils.isNotEmpty(
-            page.getUrl().regex("http://multirbl.valli.org/lookup/.+.html").nodes())) {
-            blackListSummary = 0;
-            blackList_blackListed = 0;
-            combinedlist_blackListed = 0;
-            whitelist_blackListed = 0;
-            informationallist__blackListed = 0;
+        if (CollectionUtils.isNotEmpty(page.getUrl().regex(MULTIBL_REQUEST_URL_REGEX).nodes())) {
+            initProcessor();
             loadMainHtml(page);
         }
-        if (CollectionUtils.isNotEmpty(
-            page.getUrl().regex("http://multirbl.valli.org/json-lookup.php.+").nodes())) {
+        if (CollectionUtils.isNotEmpty(page.getUrl().regex(MULTIBL_AJAX_URL_REGEX).nodes())) {
             ajaxRequest(page);
         }
     }
@@ -56,34 +58,17 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
     private void loadMainHtml(Page page) {
         Selectable selectable = page.getHtml().$("table[id=dnsbl_data] tr:has(td)");
         final List<Selectable> selectableList = selectable.nodes();
-        String data = page.getHtml()
-            .getDocument()
-            .head()
-            .getAllElements()
-            .get(12)
-            .childNodes()
-            .get(0)
-            .attr("data")
-            .replaceAll("\\s+", "");
+        String data = page.getHtml().getDocument().head().getAllElements().get(12).childNodes().get(0).attr("data").replaceAll("\\s+", "");
         String json = data.substring(data.indexOf('{'), data.lastIndexOf("}") + 1);
         String oasessionHash = "";
         try {
             mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
             map = mapper.readValue(json, Map.class);
-            oasessionHash = (String) map.get("asessionHash");
+            oasessionHash = (String) map.get(MULTIBL_PAGE_SESSION_HASH);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        for (Selectable selectable1 : selectableList) {
-            PlainText id = (PlainText) selectable1.$("tr", "id");
-            PlainText l_id = (PlainText) selectable1.$("tr td.l_id", "text");
-            PlainText l_qhost = (PlainText) selectable1.$("tr td.l_qhost", "text");
-            PlainText dns_zone = (PlainText) selectable1.$("tr td.dns_zone", "text");
-            String reqData =
-                "ash=" + oasessionHash + "&rid=" + id + "&lid=" + l_id + "&q=" + l_qhost;
-            page.addTargetRequest("http://multirbl.valli.org/json-lookup.php?" + reqData);
-        }
+        addNextRequest(selectableList,page,oasessionHash);
         logger.info("---> page request size ：" + page.getTargetRequests().size());
     }
 
@@ -122,4 +107,25 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
             + informationallist__blackListed;
         page.putField(BLACKLIST_SUMMARY, blackListSummary);
     }
+
+    private void initProcessor(){
+        blackListSummary = 0;
+        blackList_blackListed = 0;
+        combinedlist_blackListed = 0;
+        whitelist_blackListed = 0;
+        informationallist__blackListed = 0;
+    }
+
+    private void addNextRequest(List<Selectable> selectableList, Page page, String oasessionHash){
+        for (Selectable selectable1 : selectableList) {
+            PlainText id = (PlainText) selectable1.$("tr", "id");
+            PlainText l_id = (PlainText) selectable1.$("tr td.l_id", "text");
+            PlainText l_qhost = (PlainText) selectable1.$("tr td.l_qhost", "text");
+            PlainText dns_zone = (PlainText) selectable1.$("tr td.dns_zone", "text");
+            String reqData =
+                "ash=" + oasessionHash + "&rid=" + id + "&lid=" + l_id + "&q=" + l_qhost;
+            page.addTargetRequest("http://multirbl.valli.org/json-lookup.php?" + reqData);
+        }
+    }
+
 }

@@ -15,6 +15,8 @@ import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.KEY_EM
 import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.KEY_LAST_DAY_SPAM_LEVEL;
 import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.TALOS_DISPATCH_PATH;
 import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.TALOS_QUALITY_TARGET_PATH;
+import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.TALOS_QUALITY_TARGET_URL_REGEX;
+import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.TALOS_REQUEST_URL_REGEX;
 import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.EMAIL_REPUTATION;
 import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.LAST_DAY_SPAM_LEVEL;
 
@@ -24,7 +26,6 @@ import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.LA
  * Created by ernest on 2017/8/24.
  */
 public class TalosIpQualityProcessor extends AbstractWebMagicPageProcessor {
-
 
     private static List<String> paths = new ArrayList<>(3);
     private ObjectMapper mapper = new ObjectMapper(); //转换器
@@ -40,36 +41,45 @@ public class TalosIpQualityProcessor extends AbstractWebMagicPageProcessor {
 
     @Override
     public void process(Page page) {
-        if(CollectionUtils.isNotEmpty(page.getUrl().regex("https://talosintelligence.com/reputation_center/lookup\\?search=\\S+").nodes())){
-            index = 0;
-            ip = page.getHtml().xpath("//input[@id=rep-lookup]/@value").get();
-
+        if(CollectionUtils.isNotEmpty(page.getUrl().regex(TALOS_REQUEST_URL_REGEX).nodes())){
+            initProcessor(page);
         }
-        if(CollectionUtils.isNotEmpty(page.getUrl().regex("https://talosintelligence.com/sb_api/query_lookup\\?query=/api/v2/details/ip/&query_entry=\\S+").nodes())){
-            final String rawText = page.getRawText();
-            try {
-                Map<String,Object> map = mapper.readValue(rawText, Map.class);
-                String emailReputation = (String) map.get(KEY_EMAIL_REPUTATION);
-                String dailySpamName = (String) map.get(KEY_LAST_DAY_SPAM_LEVEL);
-                page.putField(EMAIL_REPUTATION,emailReputation);
-                page.putField(LAST_DAY_SPAM_LEVEL,dailySpamName);
-                if(StringUtils.isEmpty(emailReputation)&&StringUtils.isEmpty(dailySpamName)){
-                    page.setSkip(true);
-                }
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-            }
-            index =0;
+        if(CollectionUtils.isNotEmpty(page.getUrl().regex(TALOS_QUALITY_TARGET_URL_REGEX).nodes())){
+            processTarget(page);
+            return;
         }
         index ++;
-        String docResponseSession = null;
+        addNextRequest(page);
+    }
+
+    private void  initProcessor(Page page){
+        index = 0;
+        ip = page.getHtml().xpath("//input[@id=rep-lookup]/@value").get();
+    }
+
+    private void processTarget(Page page){
+        final String rawText = page.getRawText();
+        try {
+            Map map = mapper.readValue(rawText, Map.class);
+            String emailReputation = (String) map.get(KEY_EMAIL_REPUTATION);
+            String dailySpamName = (String) map.get(KEY_LAST_DAY_SPAM_LEVEL);
+            page.putField(EMAIL_REPUTATION,emailReputation);
+            page.putField(LAST_DAY_SPAM_LEVEL,dailySpamName);
+            if(StringUtils.isEmpty(emailReputation)&&StringUtils.isEmpty(dailySpamName)){
+                page.setSkip(true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        index =0;
+    }
+
+    private void addNextRequest(Page page){
+        String docResponseSession;
         try {
             docResponseSession = page.getHeaders().get("Set-Cookie").get(1);
         } catch (Exception e) {
             docResponseSession=page.getHeaders().get("Set-Cookie").get(0);
-            // e.printStackTrace();
         }
         if(StringUtils.hasText(ip)){
             String value = docResponseSession.split("=")[1];

@@ -13,14 +13,14 @@ import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.BL
  */
 public class MultiblCrawlerPipeline implements Pipeline {
 
-    private volatile int BlackListSummary;
+    private volatile int blackListSummary;
 
     @Override
     public void process(ResultItems resultItems, Task task) {
-        BlackListSummary =  resultItems.get(BLACKLIST_SUMMARY);
+        blackListSummary =  resultItems.get(BLACKLIST_SUMMARY) == null ? blackListSummary : resultItems.get(BLACKLIST_SUMMARY) ;
     }
 
     public Integer getBlackListSummary() {
-        return BlackListSummary;
+        return blackListSummary;
     }
 }

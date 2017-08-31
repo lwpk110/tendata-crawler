@@ -13,7 +13,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
  */
 public abstract class AbstractWebMagicPageProcessor  implements PageProcessor{
 
-    protected Site site = Site.me().setCharset(CharEncoding.UTF_8);
+    protected Site site = Site.me().setCharset(CharEncoding.UTF_8).setTimeOut(10000).setRetryTimes(3);
 
     @Override
     public Site getSite() {

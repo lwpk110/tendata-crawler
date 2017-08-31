@@ -17,10 +17,13 @@ public class MailAgentDomainQualityMonitoring extends AbstractEntityAuditable<Lo
 
     private MailAgentDomain mailAgentDomain;
 
-    private String emailReputation;
-    private String lastDaySpamLevel;
-    private int blackListSummary;
+    private String ipEmailReputation;
+    private String ipLastDaySpamLevel;
+    private int ipBlackListSummary;
 
+    private String domainEmailReputation;
+    private String domainLastDaySpamLevel;
+    private int domainBlackListSummary;
 
     @Id
     @GeneratedValue
@@ -39,30 +42,63 @@ public class MailAgentDomainQualityMonitoring extends AbstractEntityAuditable<Lo
         this.mailAgentDomain = mailAgentDomain;
     }
 
-    @Column(name = "email_reputation")
-    public String getEmailReputation() {
-        return emailReputation;
-    }
-
-    public void setEmailReputation(String emailReputation) {
-        this.emailReputation = emailReputation;
-    }
+/*    @Column(name = "email_reputation")
 
     @Column(name = "last_day_spam_level")
-    public String getLastDaySpamLevel() {
-        return lastDaySpamLevel;
+
+    @Column(name = "blacklist_summary") }*/
+
+    @Column(name = "ip_email_reputation")
+    public String getIpEmailReputation() {
+        return ipEmailReputation;
     }
 
-    public void setLastDaySpamLevel(String lastDaySpamLevel) {
-        this.lastDaySpamLevel = lastDaySpamLevel;
+    public void setIpEmailReputation(String ipEmailReputation) {
+        this.ipEmailReputation = ipEmailReputation;
     }
 
-    @Column(name = "blacklist_summary")
-    public int getBlackListSummary() {
-        return blackListSummary;
+    @Column(name = "ip_last_day_spam_level")
+    public String getIpLastDaySpamLevel() {
+        return ipLastDaySpamLevel;
     }
 
-    public void setBlackListSummary(int blackListSummary) {
-        this.blackListSummary = blackListSummary;
+    public void setIpLastDaySpamLevel(String ipLastDaySpamLevel) {
+        this.ipLastDaySpamLevel = ipLastDaySpamLevel;
+    }
+
+    @Column(name = "ip_blacklist_summary")
+    public int getIpBlackListSummary() {
+        return ipBlackListSummary;
+    }
+
+    public void setIpBlackListSummary(int ipBlackListSummary) {
+        this.ipBlackListSummary = ipBlackListSummary;
+    }
+
+    @Column(name = "domain_email_reputation")
+    public String getDomainEmailReputation() {
+        return domainEmailReputation;
+    }
+
+    public void setDomainEmailReputation(String domainEmailReputation) {
+        this.domainEmailReputation = domainEmailReputation;
+    }
+
+    @Column(name = "domain_last_day_spam_level")
+    public String getDomainLastDaySpamLevel() {
+        return domainLastDaySpamLevel;
+    }
+
+    public void setDomainLastDaySpamLevel(String domainLastDaySpamLevel) {
+        this.domainLastDaySpamLevel = domainLastDaySpamLevel;
+    }
+
+    @Column(name = "domain_blacklist_summary")
+    public int getDomainBlackListSummary() {
+        return domainBlackListSummary;
+    }
+
+    public void setDomainBlackListSummary(int domainBlackListSummary) {
+        this.domainBlackListSummary = domainBlackListSummary;
     }
 }
