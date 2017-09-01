@@ -1,0 +1,24 @@
+description = "tendata-bizr-manager"
+
+dependencies {
+    compile project(':tendata-crawler-core')
+    compile project(':tendata-crawler-webMagic')
+    compile "org.springframework:spring-webmvc"
+    compile "org.springframework.security:spring-security-config"
+    compile "org.hibernate:hibernate-validator"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+    compile "javax.servlet:javax.servlet-api"
+    compile "commons-beanutils:commons-beanutils"
+
+    testCompile "junit:junit"
+    testCompile "org.mockito:mockito-core"
+    testCompile "org.hamcrest:hamcrest-all"
+    testCompile "org.springframework:spring-test"
+    testCompile "org.springframework.security:spring-security-test"
+    testCompile "com.jayway.jsonpath:json-path"
+    testCompile "com.jayway.jsonpath:json-path-assert"
+    
+    integrationTestCompile "javax.servlet:jstl"
+    integrationTestCompile "org.glassfish:javax.el:${elVersion}"
+}

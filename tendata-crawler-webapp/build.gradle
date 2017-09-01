@@ -17,6 +17,7 @@ description = 'xinbee-rcs-webapp'
 
 dependencies {
     compile project(':tendata-crawler-core')
+    compile project(':tendata-crawler-manager')
     compile project(':tendata-crawler-webMagic')
 
     compile 'org.springframework.boot:spring-boot-starter-web'

@@ -1,11 +1,8 @@
 package cn.xinbee.rcs.data.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
 
 /**
  * Created by jeashi on 2016/6/23.
@@ -100,5 +97,46 @@ public class MailAgentDomainQualityMonitoring extends AbstractEntityAuditable<Lo
 
     public void setDomainBlackListSummary(int domainBlackListSummary) {
         this.domainBlackListSummary = domainBlackListSummary;
+    }
+
+    public int ipReputationLevel() {
+        if (!StringUtils.hasText(ipEmailReputation)) {
+            return 0;
+        }
+        int reputationLevel = 0;
+        switch (ipEmailReputation) {
+            case "Good":
+                reputationLevel = 1;
+                break;
+            case "Neutral":
+                reputationLevel = 2;
+                break;
+            case "Poor":
+                reputationLevel = 3;
+                break;
+        }
+        return reputationLevel;
+    }
+
+    public int ipSpamLevel() {
+        if (!StringUtils.hasText(ipLastDaySpamLevel)) {
+            return 0;
+        }
+        int spamLevel = 0;
+        switch (ipLastDaySpamLevel) {
+            case "None":
+                spamLevel = 1;
+                break;
+            case "Medium":
+                spamLevel = 2;
+                break;
+            case "High":
+                spamLevel = 3;
+                break;
+            case "Very High":
+                spamLevel = 4;
+                break;
+        }
+        return spamLevel;
     }
 }
