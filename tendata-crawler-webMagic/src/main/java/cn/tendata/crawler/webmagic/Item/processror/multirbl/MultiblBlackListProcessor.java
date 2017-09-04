@@ -73,7 +73,6 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
     }
 
     private void ajaxRequest(Page page) {
-
         try {
             final Map resMap = mapper.readValue(page.getRawText(), Map.class);
             String rid = (String) resMap.get("rid");

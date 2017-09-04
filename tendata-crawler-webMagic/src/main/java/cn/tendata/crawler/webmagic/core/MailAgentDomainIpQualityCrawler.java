@@ -40,7 +40,7 @@ public class MailAgentDomainIpQualityCrawler extends AbstractDomainIpQualityCraw
         store(multiblCrawlerPipeline, talosCrawlerPipeline, mailAgentDomain);
     }
 
-    private MultiblCrawlerPipeline runMultibl(MailAgentDomain mailAgentDomain) {
+    public MultiblCrawlerPipeline runMultibl(MailAgentDomain mailAgentDomain) {
         Spider multiblSpider = spiderFactory.getSpider(MULTIBL_KEY);
         multiblSpider.setEmptySleepTime(1000);
         MultiblCrawlerPipeline multiblCrawlerPipeline = new MultiblCrawlerPipeline();
@@ -52,7 +52,7 @@ public class MailAgentDomainIpQualityCrawler extends AbstractDomainIpQualityCraw
         return multiblCrawlerPipeline;
     }
 
-    private TalosCrawlerPipeline runTalos(MailAgentDomain mailAgentDomain) {
+    public TalosCrawlerPipeline runTalos(MailAgentDomain mailAgentDomain) {
         TalosCrawlerPipeline talosCrawlerPipeline = new TalosCrawlerPipeline();
         Spider taloSpider = spiderFactory.getSpider(TALOS_KEY);
         taloSpider
