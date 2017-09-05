@@ -1,8 +1,8 @@
 package cn.tendata.crawler.web.controller;
 
-import cn.xinbee.rcs.core.Crawler;
-import cn.xinbee.rcs.service.MailAgentDomainQualityMonitoringService;
-import cn.xinbee.rcs.service.MailAgentDomainService;
+import cn.xinbee.crawler.core.Crawler;
+import cn.xinbee.crawler.service.MailAgentDomainQualityMonitoringService;
+import cn.xinbee.crawler.service.MailAgentDomainService;
 import java.util.Map;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

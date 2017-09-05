@@ -3,6 +3,6 @@ rootProject.name = 'tendata-crawler'
 include 'tendata-crawler-core',
         'tendata-crawler-manager',
         'tendata-crawler-webapp',
-        'tendata-crawler-webMagic'
+        'tendata-crawler-webmagic'
 
 

@@ -13,12 +13,12 @@ springBoot {
     executable = true
 }
 
-description = 'xinbee-rcs-webapp'
+description = 'xinbee-crawler-webapp'
 
 dependencies {
     compile project(':tendata-crawler-core')
     compile project(':tendata-crawler-manager')
-    compile project(':tendata-crawler-webMagic')
+    compile project(':tendata-crawler-webmagic')
 
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'

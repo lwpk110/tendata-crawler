@@ -1,8 +1,8 @@
-description = "tendata-bizr-manager"
+description = "tendata-crawler-manager"
 
 dependencies {
     compile project(':tendata-crawler-core')
-    compile project(':tendata-crawler-webMagic')
+    compile project(':tendata-crawler-webmagic')
     compile "org.springframework:spring-webmvc"
     compile "org.springframework.security:spring-security-config"
     compile "org.hibernate:hibernate-validator"

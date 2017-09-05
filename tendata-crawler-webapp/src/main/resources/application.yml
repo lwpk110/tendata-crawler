@@ -17,7 +17,7 @@ spring:
        jadira.usertype.autoRegisterUserTypes: true
      hibernate:
        naming:
-           implicit-strategy: cn.xinbee.rcs.data.jpa.config.CustomImplicitNamingStrategy
+           implicit-strategy: cn.xinbee.crawler.data.jpa.config.CustomImplicitNamingStrategy
        ddl-auto: validate
 security:
   ignored: /favicon.ico,css/**,/js/**,/fonts/**,/img/**,/webjars/**,/admin/app/**,/admin/assets/**,/admin/css/**,/admin/html/**,/admin/images/**
@@ -64,3 +64,7 @@ spring:
 flyway:
   locations: classpath:db/migration/mysql
 
+---
+scheduler:
+  crawler:
+    domain-cron: ${scheduler.crawler-domain-cron:0 */5 * * * ?}

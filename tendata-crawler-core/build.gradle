@@ -2,7 +2,7 @@ plugins {
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.8"
 }
 
-description = 'xinbee-rcs-core'
+description = 'xinbee-crawler-core'
 
 sourceSets {
     generated {
