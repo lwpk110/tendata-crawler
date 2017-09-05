@@ -1,20 +1,16 @@
 package cn.xinbee.rcs.data.repository;
 
-import cn.xinbee.rcs.data.domain.MailAgentDomain;
-import cn.xinbee.rcs.data.domain.MailAgentDomainQualityMonitoring;
+import cn.xinbee.rcs.data.domain.MailChannelAgentDomainQualityMonitoring;
+import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 /**
  * {@inheritDoc}
  *
  * Created by ernest on 2017/8/23.
  */
-public interface MailAgentDomainIpQualityMonitoringRepository extends JpaRepository<MailAgentDomainQualityMonitoring, Long> {
+public interface MailAgentDomainIpQualityMonitoringRepository extends JpaRepository<MailChannelAgentDomainQualityMonitoring, Long> {
 
-    List<MailAgentDomainQualityMonitoring> findByMailAgentDomainAndCreatedDateAfterAndCreatedDateBeforeOrderByCreatedDate(MailAgentDomain mailAgentDomain,
-                                                                                                         DateTime start,
-                                                                                                         DateTime end);
+    List<MailChannelAgentDomainQualityMonitoring> findByCreatedDateAfterAndCreatedDateBeforeOrderByCreatedDate(DateTime start, DateTime end);
 }

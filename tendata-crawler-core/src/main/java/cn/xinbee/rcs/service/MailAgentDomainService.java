@@ -1,8 +1,10 @@
 package cn.xinbee.rcs.service;
 
-import cn.xinbee.rcs.data.domain.MailAgentDomain;
+import cn.xinbee.rcs.data.domain.MailChannelCrawlerAgentDomain;
 
-public interface MailAgentDomainService extends EntityService<MailAgentDomain,Integer> {
+public interface MailAgentDomainService
+    extends EntityService<MailChannelCrawlerAgentDomain, Long> {
 
-    MailAgentDomain getByChannelId(int channelId);
+
+
 }

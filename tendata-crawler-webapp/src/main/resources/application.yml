@@ -7,7 +7,7 @@ logging:
     root: INFO
 
 spring:
-  profiles.active: mysql,dev,webpower,cheetahMail,elasticsearch
+  profiles.active: mysql,dev
   messages:
     basename: cn/tendata/mdcs/messages,cn/tendata/mdcs/web/messages,i18n/admin/ValidationMessages
   jpa:
@@ -18,7 +18,7 @@ spring:
      hibernate:
        naming:
            implicit-strategy: cn.xinbee.rcs.data.jpa.config.CustomImplicitNamingStrategy
-       ddl-auto: update
+       ddl-auto: validate
 security:
   ignored: /favicon.ico,css/**,/js/**,/fonts/**,/img/**,/webjars/**,/admin/app/**,/admin/assets/**,/admin/css/**,/admin/html/**,/admin/images/**
 
@@ -36,16 +36,6 @@ link:
   rcs.root: ${rcs.server.name:http://localhost:8092}
 
 
-filter:
-    mailRecipient-uri: ${link.analysis.root}/api/analysis/filter/verify?mailRecipients={mailRecipients}&callVersion=1.0
-
-
-payment:
-  gateway-uri: ${pay.server.name:https://localhost:8888}/api/gateway
-  partner: 111111
-  key: 111111
-  notify-url: ${edm.server.name:http://localhost:${server.port}}/pay/notify
-
 ---
 spring:
   profiles: cas
@@ -61,7 +51,7 @@ spring:
   profiles: mysql
   datasource:
     driver-class-name: ${datasource.driver-class-name:com.mysql.jdbc.Driver}
-    url: ${datasource.url:jdbc:mysql://192.168.1.111:3306/xinbee_scs_taskup}
+    url: ${datasource.url:jdbc:mysql://192.168.1.111:3306/xinbee_channel}
     username: ${datasource.username:root}
     password: ${datasource.password:}
     test-while-idle: true
@@ -70,45 +60,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 flyway:
   locations: classpath:db/migration/mysql
-
----
-spring:
-  profiles: elasticsearch
-  data:
-    elasticsearch:
-      cluster-nodes: 192.168.1.111:9300
-      cluster-name: dev-es
-
----
-spring:
-  profiles: webpower
-webpower:
-  sftp-host: ${batch.sftp-url:192.168.1.111}
-  sftp-login-user: ${batch.sftp-login-username:sftp}
-  sftp-login-password: ${batch.sftp-login-passwd:sftp}
- # sftp-login-private-key: ${batch.sftp-login-private-key:tendata_rsa.rsa}
-  sftp-port: ${batch.port:22}
-  sftp-dir-remote-download: ${batch.sftp-remote-download:data}
-  sftp-dir-remote-upload: ${batch.sftp-remote-upload:upload}
-  local-dir-perefix: ${batch.local-download-directory:/data/channel/sftp/webpowerftp}
-
----
-spring:
-  profiles: cheetahMail
-cheetahMail:
-  sftp-host: ${cheetahMail.batch.sftp-url:192.168.1.110}
-  sftp-login-user: ${cheetahMail.batch.sftp-login-username:cheetahmail}
-  sftp-login-password: ${cheetahMail.batch.sftp-login-passwd:cheetahmail}
-  sftp-port: ${cheetahMail.batch.port:22}
-  sftp-dir-remote-download: ${cheetahMail.batch.sftp-remote-download:cheetahMail}
-  local-dir-perefix: ${cheetahMail.batch.local-download-directory:/data/channel/sftp/cheetahMailsftp}
-
----
-spring:
-  batch:
-    job:
-      enabled: false
 

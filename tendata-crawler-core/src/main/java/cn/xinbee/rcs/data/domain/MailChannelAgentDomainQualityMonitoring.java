@@ -8,11 +8,11 @@ import javax.persistence.*;
  * Created by jeashi on 2016/6/23.
  */
 @Entity
-public class MailAgentDomainQualityMonitoring extends AbstractEntityAuditable<Long> {
+public class MailChannelAgentDomainQualityMonitoring extends AbstractEntityAuditable<Long> {
 
     private static final long serialVersionUID = 1L;
 
-    private MailAgentDomain mailAgentDomain;
+    private MailChannelCrawlerAgentDomain mailAgentDomain;
 
     private String ipEmailReputation;
     private String ipLastDaySpamLevel;
@@ -29,21 +29,15 @@ public class MailAgentDomainQualityMonitoring extends AbstractEntityAuditable<Lo
         return super.getId();
     }
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "mail_agent_domain_id")
-    public MailAgentDomain getMailAgentDomain() {
+    public MailChannelCrawlerAgentDomain getMailAgentDomain() {
         return mailAgentDomain;
     }
 
-    public void setMailAgentDomain(MailAgentDomain mailAgentDomain) {
+    public void setMailAgentDomain(MailChannelCrawlerAgentDomain mailAgentDomain) {
         this.mailAgentDomain = mailAgentDomain;
     }
-
-/*    @Column(name = "email_reputation")
-
-    @Column(name = "last_day_spam_level")
-
-    @Column(name = "blacklist_summary") }*/
 
     @Column(name = "ip_email_reputation")
     public String getIpEmailReputation() {

@@ -2,14 +2,18 @@ package cn.tendata.crawler.webmagic.config;
 
 import cn.tendata.crawler.webmagic.Item.processror.multirbl.MultiblBlackListProcessor;
 import cn.tendata.crawler.webmagic.Item.processror.talos.TalosIpQualityProcessor;
+import cn.tendata.crawler.webmagic.context.MailAgentDomainCrawlCompleteListener;
 import cn.tendata.crawler.webmagic.core.MailAgentDomainIpQualityCrawler;
 import cn.tendata.crawler.webmagic.core.SpiderFactory;
 import cn.tendata.crawler.webmagic.suport.MailAgentDomainCrawlScheduler;
+import cn.xinbee.rcs.api.channel.domain.MailChannelManager;
+import cn.xinbee.rcs.api.config.MailChannelManagerConfig;
 import cn.xinbee.rcs.data.repository.MailAgentDomainIpQualityMonitoringRepository;
-import cn.xinbee.rcs.data.repository.MailAgentDomainRepository;
+import cn.xinbee.rcs.data.repository.MailChannelCrawlerAgentDomainRepository;
 import java.util.Collection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -24,6 +28,7 @@ import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.TA
  */
 @Configuration
 @EnableScheduling
+@Import(MailChannelManagerConfig.class)
 public class MailAgentDomainQualityConfig {
 
     @Bean
@@ -49,23 +54,25 @@ public class MailAgentDomainQualityConfig {
     }
 
     @Bean
+    public MailAgentDomainCrawlCompleteListener mailAgentDomainCrawlCompleteListener(MailChannelCrawlerAgentDomainRepository mailChannelCrawlerAgentDomainRepository,
+        MailAgentDomainIpQualityMonitoringRepository mailAgentDomainIpQualityMonitoringRepository){
+        return  new MailAgentDomainCrawlCompleteListener(mailChannelCrawlerAgentDomainRepository,mailAgentDomainIpQualityMonitoringRepository);
+    }
+    @Bean
     public SpiderFactory spiderFactory(Collection<Spider> spiderCollection) {
         return new SpiderFactory(spiderCollection);
     }
 
     @Bean
     public MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler(
-        SpiderFactory spiderFactory,
-        MailAgentDomainIpQualityMonitoringRepository mailAgentDomainIpQualityMonitoringRepository) {
-        return new MailAgentDomainIpQualityCrawler(spiderFactory,
-            mailAgentDomainIpQualityMonitoringRepository);
+        SpiderFactory spiderFactory) {
+        return new MailAgentDomainIpQualityCrawler(spiderFactory);
     }
-
     @Bean
     public MailAgentDomainCrawlScheduler mailAgentDomainCrawlScheduler(
         MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler,
-        MailAgentDomainRepository mailAgentDomainRepository) {
+        MailChannelManager mailChannelManager) {
         return new MailAgentDomainCrawlScheduler(mailAgentDomainIpQualityCrawler,
-            mailAgentDomainRepository);
+            mailChannelManager);
     }
 }

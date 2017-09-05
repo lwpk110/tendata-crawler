@@ -1,4 +1,4 @@
-package cn.tendata.crawler.webmagic.core;
+package cn.xinbee.rcs.core;
 
 /**
  * {@inheritDoc}

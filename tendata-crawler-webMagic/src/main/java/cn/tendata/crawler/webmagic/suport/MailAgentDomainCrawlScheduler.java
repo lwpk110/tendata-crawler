@@ -1,10 +1,9 @@
 package cn.tendata.crawler.webmagic.suport;
 
 import cn.tendata.crawler.webmagic.core.MailAgentDomainIpQualityCrawler;
-import cn.xinbee.rcs.data.domain.MailAgentDomain;
-import cn.xinbee.rcs.data.repository.MailAgentDomainRepository;
+import cn.xinbee.rcs.api.channel.domain.MailChannelManager;
+import cn.xinbee.rcs.data.domain.MailChannelCrawlerAgentDomain;
 import java.util.List;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * {@inheritDoc}
@@ -13,18 +12,18 @@ import org.springframework.scheduling.annotation.Scheduled;
  */
 public class MailAgentDomainCrawlScheduler {
     private final MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler;
-    private final MailAgentDomainRepository mailAgentDomainRepository;
+    private final MailChannelManager mailChannelManager;
 
     public MailAgentDomainCrawlScheduler(
         MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler,
-        MailAgentDomainRepository mailAgentDomainRepository) {
+         MailChannelManager mailChannelManager) {
         this.mailAgentDomainIpQualityCrawler = mailAgentDomainIpQualityCrawler;
-        this.mailAgentDomainRepository = mailAgentDomainRepository;
+        this.mailChannelManager = mailChannelManager;
     }
 
-    @Scheduled(initialDelay = 10000,fixedDelay = 3600000)
+    //@Scheduled(initialDelay = 10000,fixedDelay = 3600000)
     public void poll(){
-        final List<MailAgentDomain> mailAgentDomainList = mailAgentDomainRepository.findAllByDisabledFalseAndDeletedFalseAndIpInfoNotNull();
+        final List<MailChannelCrawlerAgentDomain> mailAgentDomainList = mailChannelManager.getAllDomains();
         mailAgentDomainList.forEach(mailAgentDomainIpQualityCrawler::crawl);
     }
 }

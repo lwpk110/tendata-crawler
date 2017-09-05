@@ -1,12 +1,12 @@
 package cn.xinbee.rcs.service;
 
-import cn.xinbee.rcs.data.domain.MailAgentDomain;
-import cn.xinbee.rcs.data.domain.MailAgentDomainQualityMonitoring;
+import cn.xinbee.rcs.data.domain.MailChannelAgentDomainQualityMonitoring;
+import java.util.Map;
 import org.joda.time.DateTime;
 
-import java.util.Map;
+public interface MailAgentDomainQualityMonitoringService extends EntityService<MailChannelAgentDomainQualityMonitoring,Long> {
 
-public interface MailAgentDomainQualityMonitoringService extends EntityService<MailAgentDomainQualityMonitoring,Long> {
+    Map<String, Map<String, Integer>> crawlDataStatisticsDetails(Integer channelId, DateTime start, DateTime end);
 
-    Map<String, Map<String, Integer>> crawlDataStatisticsDetails(MailAgentDomain mailAgentDomain, DateTime start, DateTime end);
+    void crawl(Integer channelCode);
 }

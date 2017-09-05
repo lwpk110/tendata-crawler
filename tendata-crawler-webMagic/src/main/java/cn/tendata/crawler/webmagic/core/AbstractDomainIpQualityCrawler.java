@@ -2,7 +2,7 @@ package cn.tendata.crawler.webmagic.core;
 
 import cn.tendata.crawler.webmagic.Item.processror.multirbl.MultiblCrawlerPipeline;
 import cn.tendata.crawler.webmagic.Item.processror.talos.TalosCrawlerPipeline;
-import cn.xinbee.rcs.data.domain.MailAgentDomain;
+import cn.xinbee.rcs.data.domain.MailChannelCrawlerAgentDomain;
 
 /**
  * {@inheritDoc}
@@ -17,8 +17,8 @@ public abstract class AbstractDomainIpQualityCrawler {
     public static String EMAIL_REPUTATION= "email_reputation";
     public static String LAST_DAY_SPAM_LEVEL= "last_day_spam_level";
 
-    abstract MultiblCrawlerPipeline runMultibl(MailAgentDomain mailAgentDomain);
+    abstract MultiblCrawlerPipeline runMultibl(MailChannelCrawlerAgentDomain mailAgentDomain);
 
-    abstract TalosCrawlerPipeline runTalos(MailAgentDomain mailAgentDomain);
+    abstract TalosCrawlerPipeline runTalos(MailChannelCrawlerAgentDomain mailAgentDomain);
 
 }

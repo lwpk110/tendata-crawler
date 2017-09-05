@@ -60,23 +60,4 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
     }
-
-/*  @Bean
-  public FilterRegistrationBean filterRegistrationBean() {
-    FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-    registrationBean.setFilter(crossDomainFilter());
-    registrationBean.setOrder(1);
-    return registrationBean;
-  }
-
-  @Bean
-  public CrossDomainFilter crossDomainFilter() {
-    return new CrossDomainFilter();
-  }*/
-
-  /*  @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new StringToDatetimeConverter());
-    }
-*/
 }
