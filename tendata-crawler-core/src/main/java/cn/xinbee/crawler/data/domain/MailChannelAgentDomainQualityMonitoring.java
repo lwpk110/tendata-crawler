@@ -1,5 +1,6 @@
 package cn.xinbee.crawler.data.domain;
 
+import cn.xinbee.crawler.statistics.util.StatisticsUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -97,40 +98,13 @@ public class MailChannelAgentDomainQualityMonitoring extends AbstractEntityAudit
         if (!StringUtils.hasText(ipEmailReputation)) {
             return 0;
         }
-        int reputationLevel = 0;
-        switch (ipEmailReputation) {
-            case "Good":
-                reputationLevel = 1;
-                break;
-            case "Neutral":
-                reputationLevel = 2;
-                break;
-            case "Poor":
-                reputationLevel = 3;
-                break;
-        }
-        return reputationLevel;
+        return StatisticsUtils.getReputationVal(ipEmailReputation);
     }
 
     public int ipSpamLevel() {
         if (!StringUtils.hasText(ipLastDaySpamLevel)) {
             return 0;
         }
-        int spamLevel = 0;
-        switch (ipLastDaySpamLevel) {
-            case "None":
-                spamLevel = 1;
-                break;
-            case "Medium":
-                spamLevel = 2;
-                break;
-            case "High":
-                spamLevel = 3;
-                break;
-            case "Very High":
-                spamLevel = 4;
-                break;
-        }
-        return spamLevel;
+        return StatisticsUtils.getSpamLevelVal(ipLastDaySpamLevel);
     }
 }

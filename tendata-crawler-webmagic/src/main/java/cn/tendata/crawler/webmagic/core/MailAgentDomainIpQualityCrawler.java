@@ -6,6 +6,7 @@ import cn.tendata.crawler.webmagic.context.MailAgentDomainCrawlCompleteEvent;
 import cn.tendata.crawler.webmagic.context.MailAgentDomainCrawlEventData;
 import cn.xinbee.crawler.core.Crawler;
 import cn.xinbee.crawler.data.domain.MailChannelCrawlerAgentDomain;
+import java.util.Arrays;
 import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,9 @@ import static cn.tendata.crawler.webmagic.Item.processror.talos.TalosData.TALOS_
 public class MailAgentDomainIpQualityCrawler extends AbstractDomainIpQualityCrawler implements
     Crawler<MailChannelCrawlerAgentDomain>, ApplicationEventPublisherAware {
 
-
-    private ApplicationEventPublisher eventPublisher;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private ApplicationEventPublisher eventPublisher;
 
     private final PageProcessor multiblBlackListProcessor;
     private final PageProcessor talosIpQualityProcessor;
@@ -46,27 +45,22 @@ public class MailAgentDomainIpQualityCrawler extends AbstractDomainIpQualityCraw
     public void crawl(MailChannelCrawlerAgentDomain mailAgentDomain) {
         if(!StringUtils.isEmpty(mailAgentDomain.getIpInfo())){
             try {
-                MultiblCrawlerPipeline multiblCrawlerPipeline = runMultibl(mailAgentDomain);
-                TalosCrawlerPipeline talosCrawlerPipeline = runTalos(mailAgentDomain);
-
-                MailAgentDomainCrawlEventData mailAgentDomainCrawlEventData = createMailAgentDomainCrawlEventData(multiblCrawlerPipeline, talosCrawlerPipeline,mailAgentDomain);
-                MailAgentDomainCrawlCompleteEvent mailAgentDomainCrawlCompleteEvent = new MailAgentDomainCrawlCompleteEvent(this, mailAgentDomainCrawlEventData);
-
-                eventPublisher.publishEvent(mailAgentDomainCrawlCompleteEvent);
+                String ipInfo = mailAgentDomain.getIpInfo();
+                final String[] ips = StringUtils.delimitedListToStringArray(ipInfo, ",");
+                Arrays.stream(ips).forEach(ip -> this.runCrawler(ip, mailAgentDomain));
             } catch (Exception e) {
                 logger.error("--> 运行爬虫出现异常:{}", e.getMessage());
                 e.printStackTrace();
             }
         }
-
     }
 
-    public MultiblCrawlerPipeline runMultibl(MailChannelCrawlerAgentDomain mailAgentDomain) {
+    public MultiblCrawlerPipeline runMultibl(String value) {
         Spider multiblSpider =  new Spider(multiblBlackListProcessor)
             .thread(300).setUUID(MULTIBL_KEY);
         multiblSpider.setEmptySleepTime(1000);
         MultiblCrawlerPipeline multiblCrawlerPipeline = new MultiblCrawlerPipeline();
-        multiblSpider.addUrl(MULTIBL_REQUEST_URL.replace("{IP}", mailAgentDomain.getIpInfo()))
+        multiblSpider.addUrl(MULTIBL_REQUEST_URL.replace("{IP}", value))
             .setPipelines(Collections.singletonList(multiblCrawlerPipeline))
             .run();
         logger.info("--> black List summary :{}", multiblCrawlerPipeline.getBlackListSummary());
@@ -74,12 +68,12 @@ public class MailAgentDomainIpQualityCrawler extends AbstractDomainIpQualityCraw
         return multiblCrawlerPipeline;
     }
 
-    public TalosCrawlerPipeline runTalos(MailChannelCrawlerAgentDomain mailAgentDomain) {
+    public TalosCrawlerPipeline runTalos(String value) {
         TalosCrawlerPipeline talosCrawlerPipeline = new TalosCrawlerPipeline();
         Spider taloSpider = new  Spider(talosIpQualityProcessor)
             .thread(1).setUUID(TALOS_KEY);
         taloSpider
-            .addUrl(TALOS_REQUEST_URL.replace("{IP}", mailAgentDomain.getIpInfo()))
+            .addUrl(TALOS_REQUEST_URL.replace("{IP}", value))
             .setPipelines(Collections.singletonList(talosCrawlerPipeline))
             .run();
         taloSpider.close();
@@ -98,6 +92,19 @@ public class MailAgentDomainIpQualityCrawler extends AbstractDomainIpQualityCraw
             mailAgentDomainCrawlEventData.setSpamLevel(talosCrawlerPipeline.getLastDaySpamLevel());
         }
         return mailAgentDomainCrawlEventData;
+    }
+
+    private void runCrawler(String ip, MailChannelCrawlerAgentDomain mailAgentDomain){
+        if(StringUtils.hasText(ip)){
+            MultiblCrawlerPipeline multiblCrawlerPipeline = runMultibl(ip);
+            TalosCrawlerPipeline talosCrawlerPipeline = runTalos(ip);
+
+            mailAgentDomain.setIpInfo(ip);
+
+            MailAgentDomainCrawlEventData mailAgentDomainCrawlEventData = createMailAgentDomainCrawlEventData(multiblCrawlerPipeline, talosCrawlerPipeline,mailAgentDomain);
+            MailAgentDomainCrawlCompleteEvent mailAgentDomainCrawlCompleteEvent = new MailAgentDomainCrawlCompleteEvent(this, mailAgentDomainCrawlEventData);
+            eventPublisher.publishEvent(mailAgentDomainCrawlCompleteEvent);
+        }
     }
 
     @Override

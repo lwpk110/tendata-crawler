@@ -40,8 +40,9 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
 
     private ObjectMapper mapper = new ObjectMapper(); //转换器
 
-    @Override public Site getSite() {
-        return super.getSite().setTimeOut(10000);
+    @Override
+    public Site getSite() {
+        return super.getSite().setTimeOut(10000).setCycleRetryTimes(3);
     }
 
     @Override
@@ -58,7 +59,13 @@ public class MultiblBlackListProcessor extends AbstractWebMagicPageProcessor {
     private void loadMainHtml(Page page) {
         Selectable selectable = page.getHtml().$("table[id=dnsbl_data] tr:has(td)");
         final List<Selectable> selectableList = selectable.nodes();
-        String data = page.getHtml().getDocument().head().getAllElements().get(12).childNodes().get(0).attr("data").replaceAll("\\s+", "");
+        String data = null;
+        try {
+            data = page.getHtml().getDocument().head().getAllElements().get(12).childNodes().get(0).attr("data").replaceAll("\\s+", "");
+        } catch (Exception e) {
+            logger.warn("########超过网站限制，返回文档：{}", page.getHtml().getDocument().head().getAllElements().toString());
+            e.printStackTrace();
+        }
         String json = data.substring(data.indexOf('{'), data.lastIndexOf("}") + 1);
         String oasessionHash = "";
         try {
