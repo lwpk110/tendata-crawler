@@ -18,9 +18,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 
-import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.MULTIBL_KEY;
-import static cn.tendata.crawler.webmagic.core.AbstractDomainIpQualityCrawler.TALOS_KEY;
-
 /**
  * {@inheritDoc}
  *
@@ -41,32 +38,17 @@ public class MailAgentDomainQualityConfig {
         return new TalosIpQualityProcessor();
     }
 
-    @Bean
-    public Spider multiblBlackListSpider() {
-        return new Spider(multiblBlackListProcessor())
-            .thread(300).setUUID(MULTIBL_KEY);
-    }
-
-    @Bean
-    public Spider talosIpQualitySpider() {
-        return new Spider(talosIpQualityProcessor())
-            .thread(1).setUUID(TALOS_KEY);
-    }
 
     @Bean
     public MailAgentDomainCrawlCompleteListener mailAgentDomainCrawlCompleteListener(MailChannelCrawlerAgentDomainRepository mailChannelCrawlerAgentDomainRepository,
         MailAgentDomainIpQualityMonitoringRepository mailAgentDomainIpQualityMonitoringRepository){
         return  new MailAgentDomainCrawlCompleteListener(mailChannelCrawlerAgentDomainRepository,mailAgentDomainIpQualityMonitoringRepository);
     }
-    @Bean
-    public SpiderFactory spiderFactory(Collection<Spider> spiderCollection) {
-        return new SpiderFactory(spiderCollection);
-    }
 
     @Bean
-    public MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler(
-        SpiderFactory spiderFactory) {
-        return new MailAgentDomainIpQualityCrawler(spiderFactory);
+    public MailAgentDomainIpQualityCrawler mailAgentDomainIpQualityCrawler() {
+        return new MailAgentDomainIpQualityCrawler( multiblBlackListProcessor(),
+            talosIpQualityProcessor());
     }
     @Bean
     public MailAgentDomainCrawlScheduler mailAgentDomainCrawlScheduler(
